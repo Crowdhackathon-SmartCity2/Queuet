@@ -1,0 +1,53 @@
+// Server Side του Queuet project
+import java.io.*;
+import java.net.*;
+
+public class QueuetServerSocket { 
+  public void run() {
+	try {
+		int serverPort = 4321; // Αναμονή νέων συνδέσεων στη serverPort.. Εμείς θέσαμε τη θύρα αυτή ίση με 4321
+		ServerSocket serverSocket = new ServerSocket(serverPort);
+		serverSocket.setSoTimeout(10000); 
+		while(true) {
+			System.out.println("Αναμένοντας νεοεισερχόμενο δημότη/πελάτη (client) on port " + serverSocket.getLocalPort() + "..."); 
+
+			Socket server = serverSocket.accept();
+			System.out.println("Μόλις συνδέθηκε για έκδοση νέου εισιτηρίου  ο δημότης/πελάτης με διεύθυνση " + server.getRemoteSocketAddress()); 
+
+			PrintWriter toClient = 
+				new PrintWriter(server.getOutputStream(),true);
+			BufferedReader fromClient =
+				new BufferedReader(
+						new InputStreamReader(server.getInputStream()));
+			String line = fromClient.readLine();
+			System.out.println("Ο Queuet εξυπηρετητής (server) απεικονίζει ότι είναι η σειρά του: " + line); 
+			toClient.println("Ευχαριστούμε που χρησιμοποιείται την υπηρεσία έκδοσης ηλεκτρονικού εισιτηρίου από τον διακομιστή με διεύθυνση " + server.getLocalSocketAddress() + "\n"); 
+		}
+	}
+	catch(UnknownHostException ex) {
+		ex.printStackTrace();
+	}
+	catch(IOException e){
+		e.printStackTrace();
+	}
+  }
+	
+int clients { αριθμός πελατών που εξυπηρετήθηκαν σε μια μέρα };
+
+int serving_ticket { αριθμός ticket που εξυπηρετείται τη τρέχοντα χρονική στιγμή };
+
+int current_ticket { αριθμός νέου ticket που εκδίδεται τη τρέχοντα χρονική στιγμή };
+
+int new_day { clients = 0; serving_ticket = 0; current_ticket  = 0; }
+
+int get_new_ticket { clients++; current_ticket++; return current_ticket; }
+
+int get_ticket_to_serve { serving_ticket++; return serving_ticket; }
+
+int get_current_ticket { return current_ticket; }
+
+  public static void main(String[] args) {
+		QueuetServerSocket srv = new QueuetServerSocket();
+		srv.run();
+  }
+}
